@@ -97,16 +97,18 @@
         NSDate *startDate = [NSDate date];
         KIFTestStepResult result;
         NSError *error = nil;
-        
+
         while ((result = executionBlock(&error)) == KIFTestStepResultWait && -[startDate timeIntervalSinceNow] < timeout) {
-            CFRunLoopRunInMode([[UIApplication sharedApplication] currentRunLoopMode] ?: kCFRunLoopDefaultMode, KIFTestStepDelay, false);
+            @autoreleasepool {
+                CFRunLoopRunInMode([[UIApplication sharedApplication] currentRunLoopMode] ?: kCFRunLoopDefaultMode, KIFTestStepDelay, false);
+            }
         }
         
         if (result == KIFTestStepResultWait) {
             error = [NSError KIFErrorWithUnderlyingError:error format:@"The step timed out after %.2f seconds: %@", timeout, error.localizedDescription];
             result = KIFTestStepResultFailure;
         }
-        
+
         if (completionBlock) {
             completionBlock(result, error);
         }
