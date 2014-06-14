@@ -337,17 +337,21 @@ typedef struct __GSEvent * GSEventRef;
     
     UIEvent *eventDown = [self _eventWithTouch:touch];
     [[UIApplication sharedApplication] sendEvent:eventDown];
-    
-    CFRunLoopRunInMode(kCFRunLoopDefaultMode, DRAG_TOUCH_DELAY, false);
-    
+
+    @autoreleasepool {
+        CFRunLoopRunInMode(kCFRunLoopDefaultMode, DRAG_TOUCH_DELAY, false);
+    }
+
     for (NSTimeInterval timeSpent = DRAG_TOUCH_DELAY; timeSpent < duration; timeSpent += DRAG_TOUCH_DELAY)
     {
         [touch setPhase:UITouchPhaseStationary];
         
         UIEvent *eventStillDown = [self _eventWithTouch:touch];
         [[UIApplication sharedApplication] sendEvent:eventStillDown];
-        
-        CFRunLoopRunInMode(kCFRunLoopDefaultMode, DRAG_TOUCH_DELAY, false);
+
+        @autoreleasepool {
+            CFRunLoopRunInMode(kCFRunLoopDefaultMode, DRAG_TOUCH_DELAY, false);
+        }
     }
     
     [touch setPhase:UITouchPhaseEnded];
@@ -401,31 +405,33 @@ typedef struct __GSEvent * GSEventRef;
     
     UIEvent *eventDown = [self _eventWithTouch:touch];
     [[UIApplication sharedApplication] sendEvent:eventDown];
-    
-    CFRunLoopRunInMode(UIApplicationCurrentRunMode, DRAG_TOUCH_DELAY, false);
 
-    for (NSInteger pointIndex = 1; pointIndex < count; pointIndex++) {
-        [touch setLocationInWindow:[self.window convertPoint:points[pointIndex] fromView:self]];
-        [touch setPhase:UITouchPhaseMoved];
-        
-        UIEvent *eventDrag = [self _eventWithTouch:touch];
-        [[UIApplication sharedApplication] sendEvent:eventDrag];
-
+    @autoreleasepool {
         CFRunLoopRunInMode(UIApplicationCurrentRunMode, DRAG_TOUCH_DELAY, false);
-    }
-    
-    [touch setPhase:UITouchPhaseEnded];
-    
-    UIEvent *eventUp = [self _eventWithTouch:touch];
-    [[UIApplication sharedApplication] sendEvent:eventUp];
-    
-    // Dispatching the event doesn't actually update the first responder, so fake it
-    if (touch.view == self && [self canBecomeFirstResponder]) {
-        [self becomeFirstResponder];
-    }
-    
-    while (UIApplicationCurrentRunMode != kCFRunLoopDefaultMode) {
-        CFRunLoopRunInMode(UIApplicationCurrentRunMode, 0.1, false);
+
+        for (NSInteger pointIndex = 1; pointIndex < count; pointIndex++) {
+            [touch setLocationInWindow:[self.window convertPoint:points[pointIndex] fromView:self]];
+            [touch setPhase:UITouchPhaseMoved];
+
+            UIEvent *eventDrag = [self _eventWithTouch:touch];
+            [[UIApplication sharedApplication] sendEvent:eventDrag];
+
+            CFRunLoopRunInMode(UIApplicationCurrentRunMode, DRAG_TOUCH_DELAY, false);
+        }
+
+        [touch setPhase:UITouchPhaseEnded];
+
+        UIEvent *eventUp = [self _eventWithTouch:touch];
+        [[UIApplication sharedApplication] sendEvent:eventUp];
+
+        // Dispatching the event doesn't actually update the first responder, so fake it
+        if (touch.view == self && [self canBecomeFirstResponder]) {
+            [self becomeFirstResponder];
+        }
+
+        while (UIApplicationCurrentRunMode != kCFRunLoopDefaultMode) {
+            CFRunLoopRunInMode(UIApplicationCurrentRunMode, 0.1, false);
+        }
     }
     [touch release];
 }

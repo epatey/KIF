@@ -110,16 +110,20 @@
     
     if (keyToTap) {
         [keyboardView tapAtPoint:CGPointCenteredInRect([keyToTap frame])];
-        CFRunLoopRunInMode(kCFRunLoopDefaultMode, keystrokeDelay, false);
-        
+        @autoreleasepool {
+            CFRunLoopRunInMode(kCFRunLoopDefaultMode, keystrokeDelay, false);
+        }
+
         return YES;
     }
     
     // We didn't find anything, so try the symbols pane
     if (modifierKey) {
         [keyboardView tapAtPoint:CGPointCenteredInRect([modifierKey frame])];
-        CFRunLoopRunInMode(kCFRunLoopDefaultMode, keystrokeDelay, false);
-        
+        @autoreleasepool {
+            CFRunLoopRunInMode(kCFRunLoopDefaultMode, keystrokeDelay, false);
+        }
+
         // If we're back at a place we've been before, and we still have things to explore in the previous
         id /*UIKBKeyplane*/ newKeyplane = [keyboardView valueForKey:@"keyplane"];
         id /*UIKBKeyplane*/ previousKeyplane = [history valueForKey:@"previousKeyplane"];
@@ -161,8 +165,10 @@
     UIView *view = [UIAccessibilityElement viewContainingAccessibilityElement:element];
     CGRect keyFrame = [view.window convertRect:[element accessibilityFrame] toView:view];
     [view tapAtPoint:CGPointCenteredInRect(keyFrame)];
-    CFRunLoopRunInMode(kCFRunLoopDefaultMode, keystrokeDelay, false);
-    
+    @autoreleasepool {
+        CFRunLoopRunInMode(kCFRunLoopDefaultMode, keystrokeDelay, false);
+    }
+
     return YES;
 }
 

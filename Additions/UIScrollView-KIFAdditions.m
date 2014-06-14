@@ -50,7 +50,9 @@ MAKE_CATEGORIES_LOADABLE(UIScrollView_KIFAdditions)
     
     if (needsUpdate) {
         [self setContentOffset:offsetPoint animated:animated];
-        CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.2, false);
+        @autoreleasepool {
+            CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.2, false);
+        }
     }
 }
 

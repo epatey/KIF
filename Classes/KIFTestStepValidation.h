@@ -33,7 +33,7 @@
     if (!mockDelegate.failed) {\
         STFail(@"%s should have failed.", #stmt);\
     }\
-    STAssertEquals((NSUInteger)cnt, mockDelegate.exceptions.count, @"Expected a different number of exceptions.");\
+    XCTAssertEqual((NSUInteger)cnt, mockDelegate.exceptions.count, @"Expected a different number of exceptions.");\
 }
 
 

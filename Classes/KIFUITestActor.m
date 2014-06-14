@@ -58,9 +58,26 @@
 - (void)waitForAccessibilityElement:(UIAccessibilityElement **)element view:(out UIView **)view withLabel:(NSString *)label value:(NSString *)value traits:(UIAccessibilityTraits)traits tappable:(BOOL)mustBeTappable
 {
 
+    __block UIView *blockView;
+    __block UIAccessibilityElement *blockElement;
     [self runBlock:^KIFTestStepResult(NSError **error) {
-        return [UIAccessibilityElement accessibilityElement:element view:view withLabel:label value:value traits:traits tappable:mustBeTappable error:error] ? KIFTestStepResultSuccess : KIFTestStepResultWait;
+        UIView *innerView = nil;
+        UIAccessibilityElement *innerElement = nil;
+
+        BOOL result = [UIAccessibilityElement accessibilityElement:&innerElement view:&innerView withLabel:label value:value traits:traits tappable:mustBeTappable error:error] ? KIFTestStepResultSuccess : KIFTestStepResultWait;
+
+        blockElement = [innerElement retain];
+        blockView = [innerView retain];
+        return result;
     }];
+    if (view) {
+        *view = blockView;
+    }
+    if (element) {
+        *element = blockElement;
+    }
+    [blockView autorelease];
+    [blockElement autorelease];
 }
 
 - (UIView *)waitForViewWithAccessibilityIdentifier:(NSString *)identifier tappable:(BOOL)mustBeTappable
@@ -75,7 +92,8 @@
     if (![UIAccessibilityElement instancesRespondToSelector:@selector(accessibilityIdentifier)]) {
         [self failWithError:[NSError KIFErrorWithFormat:@"Running test on platform that does not support accessibilityIdentifier"] stopTest:YES];
     }
-    
+
+    __block UIView *blockView;
     [self runBlock:^KIFTestStepResult(NSError **error) {
         UIAccessibilityElement *foundElement = [[UIApplication sharedApplication] accessibilityElementMatchingBlock:^BOOL(UIAccessibilityElement *element) {
             return [element.accessibilityIdentifier isEqualToString:identifier];
@@ -91,13 +109,15 @@
         if (element) {
             *element = foundElement;
         }
-        
-        if (view) {
-            *view = foundView;
-        }
-        
+
+        blockView = [foundView retain];
+
         return KIFTestStepResultSuccess;
     }];
+    if (view) {
+        *view = blockView;
+    }
+    [blockView autorelease];
 }
 
 - (void)waitForAbsenceOfViewWithAccessibilityLabel:(NSString *)label
@@ -420,7 +440,7 @@
     UIAccessibilityElement *element = nil;
     
     [self waitForAccessibilityElement:&element view:&view withLabel:label value:nil traits:UIAccessibilityTraitNone tappable:YES];
-    
+
     if (![view isKindOfClass:[UISwitch class]]) {
         [self failWithError:[NSError KIFErrorWithFormat:@"View with accessibility label \"%@\" is a %@, not a UISwitch", label, NSStringFromClass([view class])] stopTest:YES];
     }
@@ -441,9 +461,11 @@
     
     NSLog(@"Faking turning switch %@ with accessibility label %@", switchIsOn ? @"ON" : @"OFF", label);
     [switchView setOn:switchIsOn animated:YES];
-    [switchView sendActionsForControlEvents:UIControlEventValueChanged];
+    @autoreleasepool {
+        [switchView sendActionsForControlEvents:UIControlEventValueChanged];
+    }
     [self waitForTimeInterval:0.5];
-    
+
     // We gave it our best shot.  Fail the test.
     if (switchView.isOn != switchIsOn) {
         [self failWithError:[NSError KIFErrorWithFormat:@"Failed to toggle switch to \"%@\"; instead, it was \"%@\"", switchIsOn ? @"ON" : @"OFF", switchView.on ? @"ON" : @"OFF"] stopTest:YES];
