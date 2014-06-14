@@ -137,7 +137,9 @@ MAKE_CATEGORIES_LOADABLE(UIAccessibilityElement_KIFAdditions)
             }
             
             // Give the scroll view a small amount of time to perform the scroll.
-            CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.3, false);
+            @autoreleasepool {
+                CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.3, false);
+            }
         }
         
         superview = superview.superview;

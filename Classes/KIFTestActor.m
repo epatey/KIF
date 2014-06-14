@@ -86,14 +86,16 @@
     
     @autoreleasepool {
         while ((result = executionBlock(&internalError)) == KIFTestStepResultWait && -[startDate timeIntervalSinceNow] < timeout) {
-            CFRunLoopRunInMode([[UIApplication sharedApplication] currentRunLoopMode] ?: kCFRunLoopDefaultMode, KIFTestStepDelay, false);
+            @autoreleasepool {
+                CFRunLoopRunInMode([[UIApplication sharedApplication] currentRunLoopMode] ?: kCFRunLoopDefaultMode, KIFTestStepDelay, false);
+            }
         }
         
         if (result == KIFTestStepResultWait) {
             internalError = [NSError KIFErrorWithUnderlyingError:internalError format:@"The step timed out after %.2f seconds: %@", timeout, internalError.localizedDescription];
             result = KIFTestStepResultFailure;
         }
-        
+
         if (completionBlock) {
             completionBlock(result, internalError);
         }

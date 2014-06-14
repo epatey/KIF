@@ -234,8 +234,10 @@ static CGFloat const kTwoFingerConstantWidth = 40;
                 
                 // Scroll to the cell and wait for the animation to complete
                 [collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionNone animated:YES];
-                CFRunLoopRunInMode(UIApplicationCurrentRunMode, 0.5, false);
-                
+                @autoreleasepool {
+                    CFRunLoopRunInMode(UIApplicationCurrentRunMode, 0.5, false);
+                }
+
                 // Now try finding the element again
                 return [self accessibilityElementMatchingBlock:matchBlock];
             }
@@ -327,9 +329,11 @@ static CGFloat const kTwoFingerConstantWidth = 40;
 	UIColor *originalBackgroundColor = self.backgroundColor;
     for (NSUInteger i = 0; i < 5; i++) {
         self.backgroundColor = [UIColor yellowColor];
-        CFRunLoopRunInMode(kCFRunLoopDefaultMode, .05, false);
-        self.backgroundColor = [UIColor blueColor];
-        CFRunLoopRunInMode(kCFRunLoopDefaultMode, .05, false);
+        @autoreleasepool {
+            CFRunLoopRunInMode(kCFRunLoopDefaultMode, .05, false);
+            self.backgroundColor = [UIColor blueColor];
+            CFRunLoopRunInMode(kCFRunLoopDefaultMode, .05, false);
+        }
     }
     self.backgroundColor = originalBackgroundColor;
 }
@@ -387,17 +391,21 @@ static CGFloat const kTwoFingerConstantWidth = 40;
     
     UIEvent *eventDown = [self eventWithTouch:touch];
     [[UIApplication sharedApplication] sendEvent:eventDown];
-    
-    CFRunLoopRunInMode(kCFRunLoopDefaultMode, DRAG_TOUCH_DELAY, false);
-    
+
+    @autoreleasepool {
+        CFRunLoopRunInMode(kCFRunLoopDefaultMode, DRAG_TOUCH_DELAY, false);
+    }
+
     for (NSTimeInterval timeSpent = DRAG_TOUCH_DELAY; timeSpent < duration; timeSpent += DRAG_TOUCH_DELAY)
     {
         [touch setPhaseAndUpdateTimestamp:UITouchPhaseStationary];
         
         UIEvent *eventStillDown = [self eventWithTouch:touch];
         [[UIApplication sharedApplication] sendEvent:eventStillDown];
-        
-        CFRunLoopRunInMode(kCFRunLoopDefaultMode, DRAG_TOUCH_DELAY, false);
+
+        @autoreleasepool {
+            CFRunLoopRunInMode(kCFRunLoopDefaultMode, DRAG_TOUCH_DELAY, false);
+        }
     }
     
     [touch setPhaseAndUpdateTimestamp:UITouchPhaseEnded];
@@ -492,7 +500,9 @@ static CGFloat const kTwoFingerConstantWidth = 40;
             UIEvent *event = [self eventWithTouches:[NSArray arrayWithArray:touches]];
             [[UIApplication sharedApplication] sendEvent:event];
 
-            CFRunLoopRunInMode(UIApplicationCurrentRunMode, DRAG_TOUCH_DELAY, false);
+            @autoreleasepool {
+                CFRunLoopRunInMode(UIApplicationCurrentRunMode, DRAG_TOUCH_DELAY, false);
+            }
         }
     }
 
@@ -502,7 +512,9 @@ static CGFloat const kTwoFingerConstantWidth = 40;
     }
 
     while (UIApplicationCurrentRunMode != kCFRunLoopDefaultMode) {
-        CFRunLoopRunInMode(UIApplicationCurrentRunMode, 0.1, false);
+        @autoreleasepool {
+            CFRunLoopRunInMode(UIApplicationCurrentRunMode, 0.1, false);
+        }
     }
 }
 
