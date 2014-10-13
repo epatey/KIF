@@ -26,41 +26,39 @@
     }
 }
 
-- (UIView *)waitForViewWithAccessibilityLabel:(NSString *)label
+- (void)waitForViewWithAccessibilityLabel:(NSString *)label
 {
-    return [self waitForViewWithAccessibilityLabel:label value:nil traits:UIAccessibilityTraitNone tappable:NO];
+    [self waitForViewWithAccessibilityLabel:label value:nil traits:UIAccessibilityTraitNone tappable:NO];
 }
 
-- (UIView *)waitForViewWithAccessibilityLabel:(NSString *)label traits:(UIAccessibilityTraits)traits
+- (void)waitForViewWithAccessibilityLabel:(NSString *)label traits:(UIAccessibilityTraits)traits
 {
-    return [self waitForViewWithAccessibilityLabel:label value:nil traits:traits tappable:NO];
+    [self waitForViewWithAccessibilityLabel:label value:nil traits:traits tappable:NO];
 }
 
-- (UIView *)waitForViewWithAccessibilityLabel:(NSString *)label value:(NSString *)value traits:(UIAccessibilityTraits)traits
+- (void)waitForViewWithAccessibilityLabel:(NSString *)label value:(NSString *)value traits:(UIAccessibilityTraits)traits
 {
-    return [self waitForViewWithAccessibilityLabel:label value:value traits:traits tappable:NO];
+    [self waitForViewWithAccessibilityLabel:label value:value traits:traits tappable:NO];
 }
 
-- (UIView *)waitForTappableViewWithAccessibilityLabel:(NSString *)label
+- (void)waitForTappableViewWithAccessibilityLabel:(NSString *)label
 {
-    return [self waitForViewWithAccessibilityLabel:label value:nil traits:UIAccessibilityTraitNone tappable:YES];
+    [self waitForViewWithAccessibilityLabel:label value:nil traits:UIAccessibilityTraitNone tappable:YES];
 }
 
-- (UIView *)waitForTappableViewWithAccessibilityLabel:(NSString *)label traits:(UIAccessibilityTraits)traits
+- (void)waitForTappableViewWithAccessibilityLabel:(NSString *)label traits:(UIAccessibilityTraits)traits
 {
-    return [self waitForViewWithAccessibilityLabel:label value:nil traits:traits tappable:YES];
+    [self waitForViewWithAccessibilityLabel:label value:nil traits:traits tappable:YES];
 }
 
-- (UIView *)waitForTappableViewWithAccessibilityLabel:(NSString *)label value:(NSString *)value traits:(UIAccessibilityTraits)traits
+- (void)waitForTappableViewWithAccessibilityLabel:(NSString *)label value:(NSString *)value traits:(UIAccessibilityTraits)traits
 {
-    return [self waitForViewWithAccessibilityLabel:label value:value traits:traits tappable:YES];
+    [self waitForViewWithAccessibilityLabel:label value:value traits:traits tappable:YES];
 }
 
-- (UIView *)waitForViewWithAccessibilityLabel:(NSString *)label value:(NSString *)value traits:(UIAccessibilityTraits)traits tappable:(BOOL)mustBeTappable
+- (void)waitForViewWithAccessibilityLabel:(NSString *)label value:(NSString *)value traits:(UIAccessibilityTraits)traits tappable:(BOOL)mustBeTappable
 {
-    UIView *view = nil;
-    [self waitForAccessibilityElement:NULL view:&view withLabel:label value:value traits:traits tappable:mustBeTappable];
-    return view;
+    [self waitForAccessibilityElement:NULL view:NULL withLabel:label value:value traits:traits tappable:mustBeTappable];
 }
 
 - (void)waitForAccessibilityElement:(UIAccessibilityElement **)element view:(out UIView **)view withLabel:(NSString *)label value:(NSString *)value traits:(UIAccessibilityTraits)traits tappable:(BOOL)mustBeTappable
@@ -297,7 +295,7 @@
 {
     for (NSUInteger characterIndex = 0; characterIndex < [text length]; characterIndex++) {
         NSString *characterString = [text substringWithRange:NSMakeRange(characterIndex, 1)];
-        
+
         if (![KIFTypist enterCharacter:characterString]) {
             // Attempt to cheat if we couldn't find the character
             if (!fallbackView) {
@@ -621,7 +619,8 @@
 
 - (void)tapRowInTableViewWithAccessibilityLabel:(NSString*)tableViewLabel atIndexPath:(NSIndexPath *)indexPath
 {
-    UITableView *tableView = (UITableView *)[self waitForViewWithAccessibilityLabel:tableViewLabel];
+    UITableView *tableView = nil;
+    [self waitForAccessibilityElement:NULL view:&tableView withLabel:tableViewLabel value:nil traits:UIAccessibilityTraitNone tappable:NO];
     [self tapRowAtIndexPath:indexPath inTableView:tableView];
 }
 
