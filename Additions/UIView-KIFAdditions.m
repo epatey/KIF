@@ -370,10 +370,14 @@ static CGFloat const kTwoFingerConstantWidth = 40;
     
     UIEvent *event = [self eventWithTouch:touch];
 
+    @autoreleasepool {
     [[UIApplication sharedApplication] sendEvent:event];
+    }
     
     [touch setPhaseAndUpdateTimestamp:UITouchPhaseEnded];
+    @autoreleasepool {
     [[UIApplication sharedApplication] sendEvent:event];
+    }
 
     // Dispatching the event doesn't actually update the first responder, so fake it
     if ([touch.view isDescendantOfView:self] && [self canBecomeFirstResponder]) {
@@ -390,7 +394,9 @@ static CGFloat const kTwoFingerConstantWidth = 40;
     [touch setPhaseAndUpdateTimestamp:UITouchPhaseBegan];
     
     UIEvent *eventDown = [self eventWithTouch:touch];
+    @autoreleasepool {
     [[UIApplication sharedApplication] sendEvent:eventDown];
+    }
 
     @autoreleasepool {
         CFRunLoopRunInMode(kCFRunLoopDefaultMode, DRAG_TOUCH_DELAY, false);
@@ -401,7 +407,9 @@ static CGFloat const kTwoFingerConstantWidth = 40;
         [touch setPhaseAndUpdateTimestamp:UITouchPhaseStationary];
         
         UIEvent *eventStillDown = [self eventWithTouch:touch];
+        @autoreleasepool {
         [[UIApplication sharedApplication] sendEvent:eventStillDown];
+        }
 
         @autoreleasepool {
             CFRunLoopRunInMode(kCFRunLoopDefaultMode, DRAG_TOUCH_DELAY, false);
@@ -480,7 +488,9 @@ static CGFloat const kTwoFingerConstantWidth = 40;
                 [touches addObject:touch];
             }
             UIEvent *eventDown = [self eventWithTouches:[NSArray arrayWithArray:touches]];
+            @autoreleasepool {
             [[UIApplication sharedApplication] sendEvent:eventDown];
+            }
         }
         else
         {
@@ -498,8 +508,9 @@ static CGFloat const kTwoFingerConstantWidth = 40;
                 }
             }
             UIEvent *event = [self eventWithTouches:[NSArray arrayWithArray:touches]];
+            @autoreleasepool {
             [[UIApplication sharedApplication] sendEvent:event];
-
+            }
             @autoreleasepool {
                 CFRunLoopRunInMode(UIApplicationCurrentRunMode, DRAG_TOUCH_DELAY, false);
             }
