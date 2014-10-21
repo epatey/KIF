@@ -126,9 +126,10 @@ MAKE_CATEGORIES_LOADABLE(UIAccessibilityElement_KIFAdditions)
             break;
         }
         
-        if ([superview isKindOfClass:[UIScrollView class]]) {
+        if ([superview isKindOfClass:[UIScrollView class]]
+            && ![NSStringFromClass([superview class]) isEqualToString:@"UITableViewWrapperView"]) {
             UIScrollView *scrollView = (UIScrollView *)superview;
-            
+
             if ((UIAccessibilityElement *)view == element) {
                 [scrollView scrollViewToVisible:view animated:YES];
             } else {
