@@ -39,7 +39,7 @@ typedef NS_ENUM(NSUInteger, KIFPickerType) {
     KIFUIDatePicker
 };
 
-#define kKIFMajorSwipeDisplacement 200
+#define kKIFMajorSwipeDisplacement 300
 #define kKIFMinorSwipeDisplacement 5
 
 static inline KIFDisplacement KIFDisplacementForSwipingInDirection(KIFSwipeDirection direction)
